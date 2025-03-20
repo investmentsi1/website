@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投資思</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* Pyramid Styles */
+        .pyramid {
+            position: relative;
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+        }
+
+        .layer {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: black;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            background-color: #ffc903;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .layer:hover {
+            background-color: #e0b002;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .layer5 { width: 100px; }
+        .layer4 { width: 200px; }
+        .layer3 { width: 300px; }
+        .layer2 { width: 400px; }
+        .layer1 { width: 500px; }
+
+        .tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: black;
+            color: #ffc903;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            margin-top: 0.5rem;
+            z-index: 10;
+        }
+
+        .layer:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Free Learning Section */
+        .free-learning-section {
+            background-color: #f7fafc;
+            padding: 2rem 0;
+            border-t-4 border-[#ffc903];
+        }
+
+        #investment-photos {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        #investment-photos img, #telegram-photos img {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            aspect-ratio: 9 / 16;
+        }
+
+        #investment-photos img:hover, #telegram-photos img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #telegram-photos {
+            max-width: 100%;
+            justify-content: center;
+        }
+
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 0.5rem;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .popup-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #333;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #aaa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .popup-body {
+            padding: 1rem 0;
+        }
+
+        .popup-body label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .popup-body input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .popup-body input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .popup-footer {
+            text-align: right;
+            margin-top: 1.5rem;
+        }
+
+        .popup-footer button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .popup-footer button.cancel {
+            background-color: #e5e7eb;
+            color: #374151;
+            margin-right: 0.75rem;
+        }
+
+        .popup-footer button.cancel:hover {
+            background-color: #d1d5db;
+        }
+
+        .popup-footer button.confirm {
+            background-color: #3b82f6;
+            color: #fff;
+        }
+
+        .popup-footer button.confirm:hover {
+            background-color: #2563eb;
+        }
+
+        /* Tab Styles */
+        .tabs {
+            width: 100%;
+        }
+
+        .tab-buttons {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 0.25rem 0.25rem 0 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .tab-content {
+            padding: 1rem 0;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Trial Table Styles */
+        .trial-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .trial-table th, .trial-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .trial-table th {
+            background-color: #f0f0f0;
+            font-weight: 600;
+        }
+
+        .trial-table td a {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+        .trial-table td a:hover {
+            color: #2563eb;
+        }
+
+        /* Instructor Section */
+        p.text-left br {
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Banner Shadow */
+        section.bg-gradient-to-br {
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <header class="bg-black text-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#about" class="text-white hover:text-[#ffc903] transition duration-300">關於我</a></li>
+                    <li><a href="#courses" class="text-white hover:text-[#ffc903] transition duration-300">投資補習班</a></li>
+                </ul>
+            </nav>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white hover:text-[#ffc903] focus:outline-none focus:shadow-outline">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div id="mobile-menu" class="hidden absolute top-16 right-0 bg-black shadow-lg rounded-md py-2 px-4 space-y-2">
+                    <a href="#about" class="block text-white hover:text-[#ffc903] transition duration-300">關於我</a>
+                    <a href="#courses" class="block text-white hover:text-[#ffc903] transition duration-300">投資補習班</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="bg-gradient-to-br from-black to-[#ffc903] text-white py-20 px-4">
+            <div class="container mx-auto text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">人人都可以係自己嘅<span class="text-[#ffc903]">Asset Manager</span></h2>
+                <p class="text-lg md:text-xl mb-8 text-gray-200">學習理解大環境<br>學習理解市場<br>部署各類資產<br>捕捉大方向</p>
+                <a href="#courses" class="bg-[#ffc903] hover:bg-[#e0b002] text-black font-semibold py-3 px-6 rounded-full transition duration-300 shadow-md">🚀Are you Ready?</a>
+            </div>
+        </section>
+
+        <section class="free-learning-section py-16 px-4 text-center border-t-4 border-[#ffc903]">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold mb-8 text-black relative inline-block">
+                    免費學習資源
+                    <span class="absolute bottom-0 left-0 w-full h-1 bg-[#ffc903]"></span>
+                </h2>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-semibold mb-4 text-black">Instagram</h3>
+                        <a href="https://www.instagram.com/investment.si1/" target="_blank" class="mb-4 inline-flex items-center border-2 border-[#ffc903] hover:bg-[#ffc903] text-black font-semibold py-2 px-4 rounded-full transition duration-300">
+                            <i class="fab fa-instagram mr-2"></i> Follow
+                        </a>
+                        <div class="grid grid-cols-2 gap-4" id="investment-photos">
+                            <img src="images/51.png" alt="Investment Photo 1" class="w-full h-64 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/53.png" alt="Investment Photo 2" class="w-full h-64 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/57.png" alt="Investment Photo 3" class="w-full h-64 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/58.png" alt="Investment Photo 4" class="w-full h-64 object-cover rounded-lg border border-gray-200 shadow-sm">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-semibold mb-4 text-black">Telegram 思區</h3>
+                        <a href="https://t.me/investmentsi1" target="_blank" id="telegram-link" class="mb-4 inline-flex items-center border-2 border-[#ffc903] hover:bg-[#ffc903] text-black font-semibold py-2 px-4 rounded-full transition duration-300">
+                            <i class="fab fa-telegram mr-2"></i> 分享大環境及各類資產睇法
+                        </a>
+                        <div class="flex gap-4 overflow-x-auto" id="telegram-photos">
+                            <img src="images/boj.png" alt="Telegram Photo 1" class="w-48 h-96 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/dxy.png" alt="Telegram Photo 2" class="w-48 h-96 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/hsi.png" alt="Telegram Photo 3" class="w-48 h-96 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            <img src="images/yen.png" alt="Telegram Photo 4" class="w-48 h-96 object-cover rounded-lg border border-gray-200 shadow-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="courses" class="py-16 px-4 text-center bg-black">
+            <div class="container mx-auto">
+                <h2 class="text-4xl font-bold mb-12 text-white relative inline-block">
+                    投資補習班
+                    <span class="absolute bottom-0 left-0 w-full h-1 bg-[#ffc903]"></span>
+                </h2>
+                <div class="pyramid">
+                    <div class="layer layer5" data-courses='[{"title":"個人睇法","url":"#"},{"title":"課程1-2","url":"#"},{"title":"課程1-3","url":"#"}]'>
+                        <span class="layer-text">個人睇法</span>
+                        <div class="tooltip">個人睇法</div>
+                    </div>
+                    <div class="layer layer4" data-courses='[{"title":"潛在機會","url":"#"},{"title":"課程2-2","url":"#"},{"title":"課程2-3","url":"#"}]'>
+                        <span class="layer-text">潛在機會</span>
+                        <div class="tooltip">潛在機會</div>
+                    </div>
+                    <div class="layer layer3" data-courses='[{"title":"定期回顧","url":"#"},{"title":"課程3-2","url":"#"},{"title":"課程3-3","url":"#"}]'>
+                        <span class="layer-text">定期回顧</span>
+                        <div class="tooltip">定期回顧</div>
+                    </div>
+                    <div class="layer layer2" data-courses='[{"title":"宏觀投資框架","url":"#"},{"title":"課程4-2","url":"#"},{"title":"課程4-3","url":"#"}]'>
+                        <span class="layer-text">宏觀投資框架</span>
+                        <div class="tooltip">宏觀投資框架</div>
+                    </div>
+                    <div class="layer layer1" data-courses='[{"title":"投資101","url":"#"},{"title":"課程5-2","url":"#"},{"title":"課程5-3","url":"#"}]'>
+                        <span class="layer-text">投資101</span>
+                        <div class="tooltip">投資101</div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-center gap-4">
+                    <button id="enroll-now-button" class="bg-[#ffc903] hover:bg-[#e0b002] text-black font-semibold py-4 px-8 rounded-full transition duration-300 shadow-md text-xl">上堂</button>
+                    <button id="trial-button" class="bg-[#ffc903] hover:bg-[#e0b002] text-black font-semibold py-4 px-8 rounded-full transition duration-300 shadow-md text-xl">30分鐘試堂</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="bg-white py-16 px-4">
+            <div class="container mx-auto flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/3">
+                    <img src="images/me.png" alt="Instructor" class="rounded-full w-64 h-[448px] mx-auto object-cover border-4 border-[#ffc903] shadow-lg">
+                </div>
+                <div class="md:w-2/3 text-black">
+                    <h3 class="text-2xl font-bold mb-4 text-black relative inline-block">
+                        投資思
+                        <span class="absolute bottom-0 left-0 w-full h-1 bg-[#ffc903]"></span>
+                    </h3>
+                    <p class="text-lg text-left">一位曾在<span class="text-[#ffc903] font-semibold">資產管理Asset Management</span>行業打滾的普通人<br>
+                    <span class="text-[#ffc903] font-semibold">專長:</span> 宏觀投資，透過由上而下，理解大環境，結合市場情況，部署大方向的投資機會<br>
+                    <span class="text-[#ffc903] font-semibold">學習模式:</span> <br>
+                    輸入Input: 以最有系統的方式傳授宏觀投資框架<br>
+                    輸出Output: 極用心1v1問答討論<br>
+                    <span class="text-[#ffc903] font-semibold">教學原則:</span> <br>
+                    1. 授人以漁，務求一年後你不再需要我<br>
+                    2. 理解 > 方法<br>
+                    3. 真正投資</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-black text-white py-6">
+            <div class="container mx-auto px-4 text-center md:text-left flex flex-col md:flex-row justify-center items-center">
+                <div class="mb-4 md:mb-0">
+                    <ul class="flex space-x-4">
+                        <li><a href="https://www.instagram.com/investment.si1/" class="hover:text-[#ffc903] transition duration-300"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="https://t.me/investmentsi1" id="telegram-link-footer" class="hover:text-[#ffc903] transition duration-300"><i class="fab fa-telegram"></i></a></li>
+
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <div id="password-popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2>輸入密碼</h2>
+                <span class="close-button" id="close-popup-button">×</span>
+            </div>
+            <div class="popup-body">
+                <label for="password-input">密碼:</label>
+                <input type="password" id="password-input" placeholder="Enter password">
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="cancel" id="cancel-button">取消</button>
+                <button type="button" class="confirm" id="confirm-button">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trial-password-popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2>輸入試用密碼</h2>
+                <span class="close-button" id="close-trial-password-popup">×</span>
+            </div>
+            <div class="popup-body">
+                <label for="trial-password-input">試用密碼:</label>
+                <input type="password" id="trial-password-input" placeholder="Enter trial password">
+            </div>
+            <div class="popup-footer">
+                <button type="button" class="cancel" id="trial-cancel-button">取消</button>
+                <button type="button" class="confirm" id="trial-confirm-button">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trial-popup" class="popup">
+        <div class="popup-content" style="max-width: 700px;">
+            <div class="popup-header">
+                <h2>Trial Courses</h2>
+                <span class="close-button" id="close-trial-popup">×</span>
+            </div>
+            <div class="popup-body">
+                <div class="tabs">
+                    <div class="tab-buttons flex justify-center gap-2 mb-4">
+                        <button class="tab-button active" data-tab="tab1">Tab 1</button>
+                        <button class="tab-button" data-tab="tab2">Tab 2</button>
+                        <button class="tab-button" data-tab="tab3">Tab 3</button>
+                        <button class="tab-button" data-tab="tab4">Tab 4</button>
+                        <button class="tab-button" data-tab="tab5">Tab 5</button>
+                    </div>
+                    <div class="tab-content">
+                        <div id="tab1" class="tab-pane active">
+                            <table class="trial-table">
+                                <thead>
+                                    <tr><th>Course Title</th><th>Link</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Introduction to Investing</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                    <tr><td>Market Basics</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="tab2" class="tab-pane">
+                            <table class="trial-table">
+                                <thead>
+                                    <tr><th>Course Title</th><th>Link</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Asset Allocation</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                    <tr><td>Risk Management</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="tab3" class="tab-pane">
+                            <table class="trial-table">
+                                <thead>
+                                    <tr><th>Course Title</th><th>Link</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Market Trends</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                    <tr><td>Economic Indicators</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="tab4" class="tab-pane">
+                            <table class="trial-table">
+                                <thead>
+                                    <tr><th>Course Title</th><th>Link</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Portfolio Building</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                    <tr><td>Diversification</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="tab5" class="tab-pane">
+                            <table class="trial-table">
+                                <thead>
+                                    <tr><th>Course Title</th><th>Link</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Investment Strategies</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                    <tr><td>Review and Adjust</td><td><a href="#" target="_blank">Link</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Telegram link functionality
+        const telegramLink = document.getElementById('telegram-link');
+        const telegramLinkFooter = document.getElementById('telegram-link-footer');
+        const telegramGroupURL = 'https://t.me/investmentsi1';
+
+        if (telegramLink) {
+            telegramLink.href = telegramGroupURL;
+            telegramLink.target = '_blank';
+        }
+        if (telegramLinkFooter) {
+            telegramLinkFooter.href = telegramGroupURL;
+            telegramLinkFooter.target = '_blank';
+        }
+
+        // Enroll Now Popup Functionality
+        const enrollNowButton = document.getElementById('enroll-now-button');
+        const passwordPopup = document.getElementById('password-popup');
+        const closePopupButton = document.getElementById('close-popup-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const confirmButton = document.getElementById('confirm-button');
+        const passwordInput = document.getElementById('password-input');
+
+        function showPopup() {
+            passwordPopup.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hidePopup() {
+            passwordPopup.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        enrollNowButton.addEventListener('click', showPopup);
+        closePopupButton.addEventListener('click', hidePopup);
+        cancelButton.addEventListener('click', hidePopup);
+
+        confirmButton.addEventListener('click', () => {
+            const password = passwordInput.value;
+            if (password === '0510') {
+                window.location.href = 'courses.html';
+            } else {
+                alert('Incorrect password. Please try again.');
+                passwordInput.value = '';
+            }
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === passwordPopup) {
+                hidePopup();
+            }
+        });
+
+        // Trial Popup with Password Functionality
+        const trialButton = document.getElementById('trial-button');
+        const trialPasswordPopup = document.getElementById('trial-password-popup');
+        const closeTrialPasswordPopup = document.getElementById('close-trial-password-popup');
+        const trialCancelButton = document.getElementById('trial-cancel-button');
+        const trialConfirmButton = document.getElementById('trial-confirm-button');
+        const trialPasswordInput = document.getElementById('trial-password-input');
+        const trialPopup = document.getElementById('trial-popup');
+        const closeTrialPopup = document.getElementById('close-trial-popup');
+
+        function showTrialPasswordPopup() {
+            trialPasswordPopup.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideTrialPasswordPopup() {
+            trialPasswordPopup.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function showTrialPopup() {
+            trialPopup.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideTrialPopup() {
+            trialPopup.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        trialButton.addEventListener('click', showTrialPasswordPopup);
+        closeTrialPasswordPopup.addEventListener('click', hideTrialPasswordPopup);
+        trialCancelButton.addEventListener('click', hideTrialPasswordPopup);
+
+        trialConfirmButton.addEventListener('click', () => {
+            const trialPassword = trialPasswordInput.value;
+            if (trialPassword === '9999') {
+                hideTrialPasswordPopup();
+                showTrialPopup();
+            } else {
+                alert('Incorrect trial password. Please try again.');
+                trialPasswordInput.value = '';
+            }
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === trialPasswordPopup) {
+                hideTrialPasswordPopup();
+            }
+            if (event.target === trialPopup) {
+                hideTrialPopup();
+            }
+        });
+
+        closeTrialPopup.addEventListener('click', hideTrialPopup);
+
+        // Tab Switching Functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
